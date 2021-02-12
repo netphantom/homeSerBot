@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
-	"homeSerBot/pkg/botmysql"
+	"homeSerBot/pkg/mysqlmodels"
 )
 
 func (bot *homeSerBot) start(m *tb.Message) {
-	message:="Welcome to the HomeServiceAlertBot.\nPlease provide your API key using the /register <KEY> command"
+	message := "Welcome to the HomeServiceAlertBot.\nPlease provide your API key using the /register <KEY> command"
 	bot.b.Send(m.Sender, message)
 }
 
@@ -15,10 +15,9 @@ func (bot *homeSerBot) register(m *tb.Message) {
 	userId := uint(m.Sender.ID)
 	user := bot.dbModel.VerifyId(userId)
 	if user == nil {
-		newUser := botmysql.User{
+		newUser := mysqlmodels.User{
 			User:         *m.Sender,
 			Allowed:      false,
-			UC:           nil,
 			Subscription: nil,
 		}
 		err := bot.dbModel.RegisterUser(&newUser)
@@ -34,7 +33,8 @@ func (bot *homeSerBot) register(m *tb.Message) {
 	} else {
 		bot.user = user
 		bot.authorized = true
-		message := fmt.Sprintf("Welcome on board, %s",bot.user.Username)
+		bot.chat = m.Chat
+		message := fmt.Sprintf("Welcome on board, %s", bot.user.Username)
 		bot.b.Send(m.Sender, message)
 	}
 }
@@ -68,14 +68,15 @@ func (bot *homeSerBot) subscribe(m *tb.Message) {
 		bot.b.Send(m.Sender, message)
 		return
 	}
+
 	pid := m.Payload
 	process, err := bot.dbModel.SubscribeToProcess(bot.user, pid)
 	if err != nil {
 		bot.b.Send(m.Sender, err.Error())
-	} else {
-		message := fmt.Sprintf("You have been subscribed to the process: %s, %d", process.Name, process.ID)
-		bot.b.Send(m.Sender, message)
+		return
 	}
+	message := fmt.Sprintf("You have been subscribed to the process: %s, %d", process.Name, process.ID)
+	bot.b.Send(m.Sender, message)
 }
 
 func (bot *homeSerBot) unsubscribe(m *tb.Message) {
@@ -94,7 +95,7 @@ func (bot *homeSerBot) unsubscribe(m *tb.Message) {
 		bot.b.Send(m.Sender, err.Error())
 	} else {
 		message := fmt.Sprintf("You have been unsubscribed to the process")
-		bot.b.Send(m.Sender,message)
+		bot.b.Send(m.Sender, message)
 	}
 }
 
@@ -104,7 +105,7 @@ func (bot *homeSerBot) subscriptions(m *tb.Message) {
 	}
 	processList := bot.dbModel.ListSubscribed(bot.user)
 	if processList == nil {
-		bot.b.Send(m.Sender,"You do not have any subscriptions")
+		bot.b.Send(m.Sender, "You do not have any subscriptions")
 		return
 	}
 	bot.b.Send(m.Sender, "Please find below the process list you subscribed")

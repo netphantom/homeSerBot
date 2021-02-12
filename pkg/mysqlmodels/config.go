@@ -1,4 +1,4 @@
-package botmysql
+package mysqlmodels
 
 import (
 	"gorm.io/driver/mysql"
@@ -11,8 +11,8 @@ func ConnectDb(dsn string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.SetupJoinTable(&User{}, "Subscription",&UserProcess{})
-	err = db.AutoMigrate(&User{}, &UserConnection{}, &Process{})
+	err = db.SetupJoinTable(&User{}, "Subscription", &UserProcess{})
+	err = db.AutoMigrate(&User{}, &Process{}, &Notification{})
 
 	if err != nil {
 		return nil, err

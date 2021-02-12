@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
-	"homeSerBot/pkg/botmysql"
+	"homeSerBot/pkg/mysqlmodels"
 	"log"
 	"os"
 	"time"
@@ -12,14 +12,15 @@ import (
 
 type homeSerBot struct {
 	b          *tb.Bot
-	dbModel    *botmysql.DbModel
+	dbModel    *mysqlmodels.DbModel
 	authorized bool
 	infoLog    *log.Logger
-	user       *botmysql.User
+	user       *mysqlmodels.User
+	chat       *tb.Chat
 }
 
 func main() {
-	tApi := flag.String("tApi", "<Telegram Token>", "The Telegram API token" )
+	tApi := flag.String("tApi", "<Telegram Token>", "The Telegram API token")
 	dbUserName := flag.String("dbUserName", "admin", "The database username")
 	dbPass := flag.String("dbPass", "admin", "The database password")
 	dbIp := flag.String("dbIp", "8.8.8.8", "The database IP")
@@ -27,8 +28,8 @@ func main() {
 	dbName := flag.String("dbName", "TelegramBot", "The database name")
 	flag.Parse()
 
-	dsn := fmt.Sprint(*dbUserName,":",*dbPass,"@tcp(",*dbIp,":",*dbPort,")/",*dbName,"?parseTime=true")
-	db, err := botmysql.ConnectDb(dsn)
+	dsn := fmt.Sprint(*dbUserName, ":", *dbPass, "@tcp(", *dbIp, ":", *dbPort, ")/", *dbName, "?parseTime=true")
+	db, err := mysqlmodels.ConnectDb(dsn)
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +52,7 @@ func main() {
 		b:          b,
 		authorized: false,
 		infoLog:    infoLog,
-		dbModel:    &botmysql.DbModel{Db: db},
+		dbModel:    &mysqlmodels.DbModel{Db: db},
 	}
 
 	bot.b.Handle("/start", bot.start)
@@ -62,6 +63,8 @@ func main() {
 	bot.b.Handle("/subscribe", bot.subscribe)
 	bot.b.Handle("/unsubscribe", bot.unsubscribe)
 	bot.b.Handle(tb.OnText, bot.text)
+
+	go SendUpdates(&bot)
 
 	bot.b.Start()
 }
