@@ -7,7 +7,9 @@ import (
 )
 
 var (
-	ErrNoRecord = errors.New("model: No matching record found")
+	ErrNoRecord           = errors.New("model: No matching record found")
+	ErrInvalidCredentials = errors.New("models: invalid credentials")
+	ErrDuplicateEmail     = errors.New("models: duplicate email")
 )
 
 type DbModel struct {

@@ -1,4 +1,4 @@
-package main
+package telegram
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func (bot *homeSerBot) start(m *tb.Message) {
-	message := "Welcome to the HomeServiceAlertBot.\nPlease provide your API key using the /register <KEY> command"
+	message := "Welcome to the HomeServiceAlertBot.\nPlease register yourself using the /register command"
 	bot.b.Send(m.Sender, message)
 }
 
@@ -94,7 +94,7 @@ func (bot *homeSerBot) unsubscribe(m *tb.Message) {
 	if err != nil {
 		bot.b.Send(m.Sender, err.Error())
 	} else {
-		message := fmt.Sprintf("You have been unsubscribed to the process")
+		message := fmt.Sprintf("You have been unsubscribed from the process updates")
 		bot.b.Send(m.Sender, message)
 	}
 }
@@ -103,6 +103,7 @@ func (bot *homeSerBot) subscriptions(m *tb.Message) {
 	if !IsAuthorized(bot, m.Sender) {
 		return
 	}
+
 	processList := bot.dbModel.ListSubscribed(bot.user)
 	if processList == nil {
 		bot.b.Send(m.Sender, "You do not have any subscriptions")
