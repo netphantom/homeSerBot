@@ -13,7 +13,9 @@ func (dash *dashboard) showLogin(c *gin.Context) {
 func (dash *dashboard) login(c *gin.Context) {
 	email := c.PostForm("userEmail")
 	password := c.PostForm("userPassword")
-
+	if password != "asd" {
+		c.HTML(http.StatusBadRequest, "login.html", "error")
+	}
 	log.Printf("%s , %s", email, password)
 }
 

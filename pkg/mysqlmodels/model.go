@@ -9,7 +9,6 @@ import (
 var (
 	ErrNoRecord           = errors.New("model: No matching record found")
 	ErrInvalidCredentials = errors.New("models: invalid credentials")
-	ErrDuplicateEmail     = errors.New("models: duplicate email")
 )
 
 type DbModel struct {
@@ -25,8 +24,9 @@ type Process struct {
 type User struct {
 	gorm.Model
 	tb.User
-	Id           uint      `gorm:"primaryKey"`
-	Allowed      bool      `gorm:"default:false"`
+	Id           uint `gorm:"primaryKey"`
+	Allowed      bool `gorm:"default:false"`
+	Password     string
 	Subscription []Process `gorm:"many2many:user_process"`
 	Notification []Notification
 }
