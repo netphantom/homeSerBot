@@ -24,9 +24,9 @@ type Process struct {
 type User struct {
 	gorm.Model
 	tb.User
-	Id           uint `gorm:"primaryKey"`
-	Allowed      bool `gorm:"default:false"`
-	Password     string
+	Id           uint      `gorm:"primaryKey"`
+	Allowed      bool      `gorm:"default:false"`
+	Password     []byte    `gorm:"default:Null"`
 	Subscription []Process `gorm:"many2many:user_process"`
 	Notification []Notification
 }

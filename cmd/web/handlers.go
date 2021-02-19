@@ -1,80 +1,65 @@
 package main
 
 import (
+	"errors"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"log"
+	"homeSerBot/pkg/forms"
+	"letsgo/pkg/models"
 	"net/http"
 )
 
+const sessionKey = "uId"
+
 func (dash *dashboard) showLogin(c *gin.Context) {
-	c.HTML(http.StatusOK, "login.html", gin.H{})
+	c.HTML(http.StatusOK, "login.gohtml", &templateData{Form: forms.New(nil)})
 }
 
 func (dash *dashboard) login(c *gin.Context) {
-	email := c.PostForm("userEmail")
-	password := c.PostForm("userPassword")
-	if password != "asd" {
-		c.HTML(http.StatusBadRequest, "login.html", "error")
+	err := c.Request.ParseForm()
+	if err != nil {
+		panic(err)
 	}
-	log.Printf("%s , %s", email, password)
-}
+	form := forms.New(c.Request.Form)
+	form.Required("userName", "password")
+	if !form.Valid() {
+		form.Errors.Add("generic", "Please provide the required data")
+		c.HTML(http.StatusInternalServerError, "login.gohtml", &templateData{Form: form})
+		return
+	}
 
-/*
-// Handler for the login request
-func login(c *gin.Context) {
-	// Obtain the POSTed username and password values
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-
-	if response := auth.Login(username, password); response.Token != "" {
-		// If authentication succeeds set the cookies and
-		// respond with an HTTP success
-		// status and include the token in the response
-		c.SetCookie("username", username, 3600, "", "", false, true)
-		c.SetCookie("token", response.Token, 3600, "", "", false, true)
-
-		c.JSON(http.StatusOK, response)
+	session := sessions.Default(c)
+	id, err := dash.users.Authenticate(form.Get("userName"), form.Get("password"))
+	if err != nil {
+		if errors.Is(err, models.ErrInvalidCredentials) {
+			form.Errors.Add("generic", "Email or Password are not correct")
+			c.HTML(http.StatusInternalServerError, "login.gohtml", &templateData{Form: form})
+		}
 	} else {
-		// Respond with an HTTP error if authentication fails
-		c.AbortWithStatus(http.StatusUnauthorized)
+		session.Set(sessionKey, id)
+		if err := session.Save(); err != nil {
+			form.Errors.Add("generic", "Unable to create the sessions")
+			c.HTML(http.StatusInternalServerError, "login.gohtml", &templateData{Form: form})
+			return
+		}
+		c.HTML(http.StatusOK, "index.html", nil)
 	}
 }
-
-// Handler for the logout request
-func logout(c *gin.Context) {
-	// Obtain the username and token from the cookies
-	username, err1 := c.Cookie("username")
-	token, err2 := c.Cookie("token")
-
-	if err1 == nil && err2 == nil && auth.Logout(username, token) {
-		// Clear the cookies and
-		// respond with an HTTP success status
-		c.SetCookie("username", "", -1, "", "", false, true)
-		c.SetCookie("token", "", -1, "", "", false, true)
-
-		c.JSON(http.StatusOK, nil)
-	} else {
-		// Respond with an HTTP error
-		c.AbortWithStatus(http.StatusUnauthorized)
+func (dash *dashboard) logout(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(sessionKey)
+	form := forms.New(nil)
+	if user == nil {
+		form.Errors.Add("generic", "Invalid session token")
+		c.HTML(http.StatusInternalServerError, "login.gohtml", &templateData{Form: form})
+		return
 	}
 
-}
-
-// Handler to serve the protected content
-func serveProtectedContent(c *gin.Context) {
-	// Obtain the username and token from the cookies
-	username, err1 := c.Cookie("username")
-	token, err2 := c.Cookie("token")
-
-	if err1 == nil && err2 == nil && auth.Authenticate(username, token) {
-		// Respond with an HTTP success status and include the
-		// content in the response
-
-		c.JSON(http.StatusOK, gin.H{"content": "This should be visible to authenticated users only."})
-	} else {
-		// Respond with an HTTP error
-		c.AbortWithStatus(http.StatusUnauthorized)
+	session.Delete(sessionKey)
+	if err := session.Save(); err != nil {
+		form.Errors.Add("generic", "Failed to delete the session")
+		c.HTML(http.StatusInternalServerError, "login.gohtml", &templateData{Form: form})
+		return
 	}
+	c.HTML(http.StatusOK, "login.html", nil)
 }
-
-*/

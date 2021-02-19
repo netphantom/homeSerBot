@@ -2,7 +2,9 @@ package mysqlmodels
 
 import (
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"letsgo/pkg/models"
 )
 
 //VerifyId function check if the user is correctly registered
@@ -12,10 +14,7 @@ func (u *DbModel) VerifyId(id uint) *User {
 	if errors.Is(queryResult.Error, gorm.ErrRecordNotFound) {
 		return nil
 	}
-	if user.Allowed {
-		return &user
-	}
-	return nil
+	return &user
 }
 
 func (u *DbModel) RegisterUser(user *User) error {
@@ -57,4 +56,26 @@ func (u *DbModel) ListSubscribed(user *User) []Process {
 		return nil
 	}
 	return processList
+}
+
+func (u *DbModel) Authenticate(username, password string) (int, error) {
+	var user User
+	queryResult := u.Db.First(&user, "username = ?", username)
+	if errors.Is(queryResult.Error, gorm.ErrRecordNotFound) {
+		return 0, nil
+	}
+
+	if string(user.Password) == "" {
+		return int(user.Id), nil
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return 0, models.ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+	return int(user.Id), nil
 }

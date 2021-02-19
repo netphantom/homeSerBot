@@ -31,6 +31,11 @@ func (bot *homeSerBot) register(m *tb.Message) {
 		}
 		bot.b.Send(m.Sender, message)
 	} else {
+		if !user.Allowed {
+			message := "Your request is still pending, please wait for authorization"
+			bot.b.Send(m.Sender, message)
+			return
+		}
 		bot.user = user
 		bot.authorized = true
 		bot.chat = m.Chat

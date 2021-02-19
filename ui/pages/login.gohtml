@@ -41,37 +41,32 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Hello There!</h1>
                                     </div>
-                                    {{ .}}
-                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                        <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                                    <div class="text-center">
+                                        <h6> Please provide your telegram username and your password.
+                                        If it is your first time you login, please leave the password field empty</h6>
                                     </div>
 
                                     <form class="userForm" method="POST" action="/login">
-                                        <div class="form-group">
+                                        {{with .Form}}
+                                            {{with .Errors.Get "generic"}}
+                                                <div class="alert alert-warning alert-dismissible fade show" role="alert"
+                                                     style="text-align: center;">{{.}}
+                                                </div>
+                                            {{end}}
 
-                                            <input type="email" class="form-control form-control-user"
-                                                name="userEmail" aria-describedby="emailHelp"
-                                                placeholder="Enter Email Address...">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-user"
+                                                   name="userName" placeholder="Enter your Telegram username">
                                         </div>
                                         <div class="form-group">
-
                                             <input type="password" class="form-control form-control-user"
-                                                name="userPassword" placeholder="Password">
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-
-                                                <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">Remember
-                                                    Me</label>
-                                            </div>
+                                                    name="password" placeholder="Password">
                                         </div>
                                         <input type="submit" value="Login" class="btn btn-primary btn-user btn-block">
                                         <hr>
+                                        {{end}}
                                     </form>
+
                                     <div class="text-center">
                                         <a class="small" href="../static/forgot-password.html">Forgot Password?</a>
                                     </div>
