@@ -4,7 +4,6 @@ import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"letsgo/pkg/models"
 )
 
 //VerifyId function check if the user is correctly registered
@@ -62,20 +61,61 @@ func (u *DbModel) Authenticate(username, password string) (int, error) {
 	var user User
 	queryResult := u.Db.First(&user, "username = ?", username)
 	if errors.Is(queryResult.Error, gorm.ErrRecordNotFound) {
-		return 0, nil
+		return 0, ErrInvalidCredentials
 	}
 
 	if string(user.Password) == "" {
 		return int(user.Id), nil
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err := bcrypt.CompareHashAndPassword(user.Password, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return 0, models.ErrInvalidCredentials
+			return 0, ErrInvalidCredentials
 		} else {
 			return 0, err
 		}
 	}
 	return int(user.Id), nil
+}
+
+func (u *DbModel) ChangePsw(new, current string, id int) error {
+	var currentHashedPassword []byte
+	var user User
+
+	queryResult := u.Db.First(&user, id)
+	if queryResult.Error != nil {
+		return queryResult.Error
+	}
+	currentHashedPassword = user.Password
+
+	err := bcrypt.CompareHashAndPassword(currentHashedPassword, []byte(current))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return ErrInvalidCredentials
+		} else {
+			return err
+		}
+	}
+
+	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(new), 12)
+	if err != nil {
+		return err
+	}
+
+	user.Password = newHashedPassword
+	queryResult = u.Db.Save(&user)
+	if queryResult.Error != nil {
+		return queryResult.Error
+	}
+	return nil
+}
+
+func (u *DbModel) ListNewUsers() ([]User, error) {
+	var newUserList []User
+	queryResult := u.Db.Find(&newUserList, "allowed = 0")
+	if queryResult.Error != nil {
+		return nil, queryResult.Error
+	}
+	return newUserList, nil
 }

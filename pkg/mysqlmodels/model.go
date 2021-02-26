@@ -21,6 +21,14 @@ type Process struct {
 	Description string
 }
 
+type Notification struct {
+	gorm.Model
+	UserID     int `gorm:"primaryKey"`
+	ProcessID  int `gorm:"primaryKey"`
+	Status     string
+	ExitStatus string
+}
+
 type User struct {
 	gorm.Model
 	tb.User
@@ -36,12 +44,4 @@ type UserProcess struct {
 	gorm.Model
 	UserID    int `gorm:"primaryKey"`
 	ProcessID int `gorm:"primaryKey"`
-}
-
-type Notification struct {
-	gorm.Model
-	UserID     int `gorm:"primaryKey"`
-	ProcessID  int `gorm:"primaryKey"`
-	Status     string
-	ExitStatus string
 }

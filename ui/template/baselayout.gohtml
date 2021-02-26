@@ -1,0 +1,63 @@
+    <!doctype html>
+    <html lang='en'>
+        <head>
+            <meta charset='utf-8'>
+            <title>{{template "title" .}} - HomeSerBot Dashboard</title>
+            <link rel='stylesheet' href='/static/css/main.css'>
+            <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>
+            <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700'>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        </head>
+        <body>
+            <header>
+                <h1><a>HomeSerBot</a></h1>
+            </header>
+            <nav>
+                <div>
+                    <a href='/dashboard/'>Home</a>
+                    <a href='/dashboard/profile'>Profile</a>
+                    <a href='/dashboard/processes'>Processes</a>
+                </div>
+                <div>
+                    <a href='/dashboard/notifications'>
+                        <span class="badge badge-light">{{if .Notifications}}{{.Notifications}}{{else}}{{0}}{{end}}</span> Notifications
+                    </a>
+                    <a href='/dashboard/logout'>Quit</a>
+                </div>
+            </nav>
+            <main>
+                {{if .Alert}}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center;">
+                        {{.Alert}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {{end}}
+                {{if .Error}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"  style="text-align: center;">
+                        {{.Error}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {{end}}
+                {{if .Success}}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="text-align: center;">
+                        {{.Success}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {{end}}
+
+                {{template "main" .}}
+            </main>
+                {{template "footer" .}}
+
+            <script src="/static/js/main.js" type="text/javascript"></script>
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        </body>
+    </html>

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/gin-contrib/multitemplate"
 	"homeSerBot/pkg/forms"
 	"homeSerBot/pkg/mysqlmodels"
-	"time"
 )
 
 type templateData struct {
@@ -11,6 +11,12 @@ type templateData struct {
 	User *mysqlmodels.User
 }
 
-func humanDate(t time.Time) string {
-	return t.Format("02 Jan 2006 at 15:04")
+func templateRenderer() multitemplate.Renderer {
+	mTemplate := multitemplate.New()
+	mTemplate.AddFromFiles("home", "ui/template/baselayout.gohtml", "ui/template/home.gohtml", "ui/template/footer.gohtml")
+	mTemplate.AddFromFiles("changePassword", "ui/template/baselayout.gohtml", "ui/template/password.gohtml", "ui/template/footer.gohtml")
+	mTemplate.AddFromFiles("login", "ui/template/login.gohtml")
+	mTemplate.AddFromFiles("profile", "ui/template/baselayout.gohtml", "ui/template/profile.gohtml", "ui/template/footer.gohtml")
+	mTemplate.AddFromFiles("notifications", "ui/template/baselayout.gohtml", "ui/template/notifications.gohtml", "ui/template/footer.gohtml")
+	return mTemplate
 }
