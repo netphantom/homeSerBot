@@ -1,27 +1,36 @@
 {{define "title"}}Notifications{{end}}
 
 {{define "main"}}
-    <h2>Notification list</h2>
+    <h3>Here below are your notifications</h3>
+    {{if .NewUsers}}
+        <h5>New users requests</h5>
+        {{range .NewUsers}}
+            <table>
+                <tr>
+                    <th>First Name</th>
+                    <td>{{.FirstName}}</td>
+                </tr>
+                <tr>
+                    <th>Last Name</th>
+                    <td>{{.LastName}}</td>
+                </tr>
+                <tr>
+                    <th>Username</th>
+                    <td>{{.Username}} <a href="/dashboard/adminMode?username={{.Username}}&status=accept">Accept</a>
+                        <a href="/dashboard/adminMode?username={{.Username}}&status=decline">Decline</a></td>
+                </tr>
+            </table>
+            <br>
+        {{end}}
+    {{end}}
+
+    {{with .UserProcess}}
+        <h2>Your Process Notifications</h2>
         <table>
             <tr>
-                <th>First Name</th>
-                <td>{{.first_name}}</td>
-            </tr>
-            <tr>
-                <th>Last Name</th>
-                <td>{{.last_name}}</td>
-            </tr>
-            <tr>
-                <th>Username</th>
-                <td>{{.username}}</td>
-            </tr>
-            <tr>
-                <th>Accepted date</th>
-                <td>{{.created_at}}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td><a href="/dashboard/changePassword">Change password</a></td>
+                <th>Process Name</th>
+                <td>{{.status}}</td>
             </tr>
         </table>
+    {{end}}
 {{end}}

@@ -18,13 +18,13 @@ func (dash *dashboard) routes() http.Handler {
 	r.POST("/login", dash.login)
 
 	private := r.Group("/dashboard")
-	private.Use(dash.AuthRequired)
+	private.Use(dash.AuthRequired, dash.UpdateNotificationNumber)
 	{
 		private.GET("", dash.home)
 		private.GET("/profile", dash.profile)
 
 		private.GET("/notifications", dash.showNotifications)
-		private.POST("/notifications", dash.elaborateNotification)
+		private.GET("/adminMode", dash.adminMode)
 
 		private.GET("/changePassword", dash.showChangePassword)
 		private.POST("/changePassword", dash.changePassword)

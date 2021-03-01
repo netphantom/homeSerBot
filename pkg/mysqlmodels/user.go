@@ -119,3 +119,24 @@ func (u *DbModel) ListNewUsers() ([]User, error) {
 	}
 	return newUserList, nil
 }
+
+func (u *DbModel) AllowUser(username string) error {
+	var user User
+	queryResult := u.Db.First(&user, "username = ?", username)
+	if errors.Is(queryResult.Error, gorm.ErrRecordNotFound) {
+		return ErrNoRecord
+	}
+	user.Allowed = true
+	u.Db.Save(user)
+	return nil
+}
+
+func (u *DbModel) NotAllowUser(username string) error {
+	var user User
+	queryResult := u.Db.First(&user, "username = ?", username)
+	if errors.Is(queryResult.Error, gorm.ErrRecordNotFound) {
+		return ErrNoRecord
+	}
+	u.Db.Delete(&user)
+	return nil
+}

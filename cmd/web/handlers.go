@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	ginsession "github.com/go-session/gin-session"
+	tb "gopkg.in/tucnak/telebot.v2"
 	"homeSerBot/pkg/forms"
 	"homeSerBot/pkg/mysqlmodels"
 	"net/http"
@@ -15,7 +16,27 @@ func (dash *dashboard) showLogin(c *gin.Context) {
 	c.HTML(http.StatusOK, "login", &templateData{Form: forms.New(nil)})
 }
 func (dash *dashboard) showChangePassword(c *gin.Context) {
-	c.HTML(http.StatusOK, "changePassword", gin.H{})
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
+
+	c.HTML(http.StatusOK, "changePassword", gin.H{
+		"Notifications": notifications,
+	})
+}
+func (dash *dashboard) showNotifications(c *gin.Context) {
+	newUsersList, err := dash.users.ListNewUsers()
+	if err != nil {
+		panic(err)
+	}
+	var newUsers []tb.User
+	for _, u := range newUsersList {
+		newUsers = append(newUsers, u.User)
+	}
+	sess := ginsession.FromContext(c)
+	sess.Set("notifications", 0)
+	c.HTML(http.StatusOK, "notifications", gin.H{
+		"NewUsers": newUsers,
+	})
 }
 
 func (dash *dashboard) login(c *gin.Context) {
@@ -38,14 +59,14 @@ func (dash *dashboard) login(c *gin.Context) {
 			c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
 		}
 	} else {
-		session := ginsession.FromContext(c)
+		sess := ginsession.FromContext(c)
 		if form.Get("password") == "" {
-			session.Set("init", true)
+			sess.Set("init", true)
 		} else {
-			session.Set("init", false)
+			sess.Set("init", false)
 		}
-		session.Set(sessionKey, id)
-		err := session.Save()
+		sess.Set(sessionKey, id)
+		err := sess.Save()
 		if err != nil {
 			form.Errors.Add("generic", "Unable to create the sessions")
 			c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
@@ -56,18 +77,18 @@ func (dash *dashboard) login(c *gin.Context) {
 }
 
 func (dash *dashboard) logout(c *gin.Context) {
-	session := ginsession.FromContext(c)
-	_, ok := session.Get(sessionKey)
+	sess := ginsession.FromContext(c)
+	_, ok := sess.Get(sessionKey)
 	form := forms.New(nil)
 	if !ok {
-		form.Errors.Add("generic", "Invalid session token")
+		form.Errors.Add("generic", "Invalid sess token")
 		c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
 		return
 	}
 
-	session.Delete(sessionKey)
-	if err := session.Save(); err != nil {
-		form.Errors.Add("generic", "Failed to delete the session")
+	sess.Delete(sessionKey)
+	if err := sess.Save(); err != nil {
+		form.Errors.Add("generic", "Failed to delete the sess")
 		c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
 		return
 	}
@@ -75,8 +96,8 @@ func (dash *dashboard) logout(c *gin.Context) {
 }
 
 func (dash *dashboard) home(c *gin.Context) {
-	session := ginsession.FromContext(c)
-	init, ok := session.Get("init")
+	sess := ginsession.FromContext(c)
+	init, ok := sess.Get("init")
 	if !ok {
 		c.Redirect(http.StatusSeeOther, "/login")
 		return
@@ -87,21 +108,28 @@ func (dash *dashboard) home(c *gin.Context) {
 		})
 		return
 	}
-	c.HTML(http.StatusOK, "home", gin.H{})
+	notifications, _ := sess.Get("notifications")
+	c.HTML(http.StatusOK, "home", gin.H{
+		"Notifications": notifications,
+	})
 }
 
 func (dash *dashboard) profile(c *gin.Context) {
-	session := ginsession.FromContext(c)
-	uid, ok := session.Get(sessionKey)
+	sess := ginsession.FromContext(c)
+	uid, ok := sess.Get(sessionKey)
+	notifications, _ := sess.Get("notifications")
 	if !ok {
 		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
-			"Error": "An error occurred during the session elaboration"})
+			"Notifications": notifications,
+			"Error":         "An error occurred during the sess elaboration"})
 		return
 	}
 	intUid := uid.(int)
 	user := dash.users.VerifyId(uint(intUid))
-	//TODO review the date
+	// TODO review the date
 	c.HTML(http.StatusOK, "profile", gin.H{
+		"Notifications": notifications,
+
 		"first_name": user.FirstName,
 		"last_name":  user.LastName,
 		"username":   user.Username,
@@ -125,9 +153,12 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 	if form.Get("new") != form.Get("confirm") {
 		form.Errors.Add("Alert", "Passwords do not match")
 	}
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
 	if !form.Valid() {
 		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
-			"Alert": form.Errors.Get("Alert"),
+			"Alert":         form.Errors.Get("Alert"),
+			"Notifications": notifications,
 
 			"Current": form.Errors.Get("current"),
 			"New":     form.Errors.Get("new"),
@@ -136,18 +167,19 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 		return
 	}
 
-	session := ginsession.FromContext(c)
-	uid, ok := session.Get(sessionKey)
+	uid, ok := sess.Get(sessionKey)
 	if !ok {
 		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
-			"Error": "An error occurred during the session elaboration"})
+			"Notifications": notifications,
+
+			"Error": "An error occurred during the sess elaboration"})
 		return
 	}
 
-	init, ok := session.Get("init")
+	init, ok := sess.Get("init")
 	if init.(bool) {
 		err = dash.users.ChangePsw(form.Get("new"), form.Get(""), uid.(int))
-		session.Delete("init")
+		sess.Delete("init")
 	} else {
 		err = dash.users.ChangePsw(form.Get("new"), form.Get("current"), uid.(int))
 	}
@@ -155,21 +187,40 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, mysqlmodels.ErrInvalidCredentials) {
 			c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
-				"Error": "Invalid Credentials"})
+				"Notifications": notifications,
+				"Error":         "Invalid Credentials"})
 			return
 		} else {
 			panic(err)
 		}
 	}
 	c.HTML(http.StatusOK, "home", gin.H{
+		"Notifications": notifications,
+
 		"Success": "Password Changed"})
 }
 
-func (dash *dashboard) showNotifications(c *gin.Context) {
-
-	c.HTML(http.StatusOK, "notifications", gin.H{})
-}
-
-func (dash *dashboard) elaborateNotification(c *gin.Context) {
-
+func (dash *dashboard) adminMode(c *gin.Context) {
+	username := c.Query("username")
+	status := c.Query("status")
+	if status == "accept" {
+		err := dash.users.AllowUser(username)
+		if err != nil {
+			c.HTML(http.StatusOK, "notifications", gin.H{
+				"Error": "An error occurred during the acceptance process",
+			})
+			return
+		}
+	} else {
+		err := dash.users.NotAllowUser(username)
+		if err != nil {
+			c.HTML(http.StatusOK, "notifications", gin.H{
+				"Error": "An error occurred during the acceptance process",
+			})
+			return
+		}
+	}
+	c.HTML(http.StatusOK, "notifications", gin.H{
+		"Success": "Operation performed correctly",
+	})
 }

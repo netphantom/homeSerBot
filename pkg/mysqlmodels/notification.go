@@ -1,6 +1,6 @@
 package mysqlmodels
 
-func (u *DbModel) GetUserNotification(user *User) ([]Notification, error) {
+func (u *DbModel) UserProcessNotification(user *User) ([]Notification, error) {
 	processList := u.ListSubscribed(user)
 	uid := user.Id
 

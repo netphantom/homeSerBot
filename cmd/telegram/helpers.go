@@ -34,7 +34,7 @@ func SendUpdates(bot *homeSerBot) {
 	for {
 		time.Sleep(3 * time.Second)
 		if bot.user != nil {
-			notificationList, err := bot.dbModel.GetUserNotification(bot.user)
+			notificationList, err := bot.dbModel.UserProcessNotification(bot.user)
 			if err != nil {
 				if errors.Is(err, mysqlmodels.ErrNoRecord) {
 					continue
