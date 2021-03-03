@@ -23,8 +23,8 @@ func (u *DbModel) UserProcessNotification(user *User) ([]Notification, error) {
 	return notificationList, nil
 }
 
-func (u *DbModel) RemoveNotification(not *Notification) error {
-	queryRes := u.Db.Delete(&not)
+func (u *DbModel) RemoveNotification(n *Notification) error {
+	queryRes := u.Db.Delete(&n)
 	if queryRes.Error != nil {
 		return queryRes.Error
 	}

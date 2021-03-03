@@ -20,7 +20,7 @@ func (dash *dashboard) UpdateNotificationNumber(c *gin.Context) {
 	session := ginsession.FromContext(c)
 	_, ok := session.Get("notifications")
 	if !ok {
-		session.Set("notifications", dash.NotificationNumber())
+		session.Set("notifications", dash.NotificationNumber(c))
 	}
 	c.Next()
 }

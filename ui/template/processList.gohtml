@@ -1,0 +1,31 @@
+{{define "title"}}Process{{end}}
+
+{{define "main"}}
+    <h4>Process List</h4>
+        {{range .Process}}
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <td>{{.Model.ID}}</td>
+                </tr>
+                <tr>
+                    <th>Process Name</th>
+                    <td>{{.Name}}</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>{{.Description}} </td>
+                </tr>
+                <tr>
+                    <th>Management</th>
+                    <td>
+                    <a href="/dashboard/processDetail?process={{.Model.ID}}">Edit</a>
+                    | <a href="/dashboard/deleteProcess?process={{.Model.ID}}">Delete</a>
+                    </td>
+                </tr>
+            </table>
+            <br>
+        {{end}}
+    <a href="/dashboard/showNewProcess">Add new process</a>
+
+{{end}}

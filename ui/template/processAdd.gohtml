@@ -1,0 +1,24 @@
+{{define "title"}}Add new process{{end}}
+
+{{define "main"}}
+    <h4>Processes available</h4>
+        <div>To add a new process, just write the description and click on the "Add" button</div>
+        <br>
+            <form action='/dashboard/processAdd' method='POST' novalidate>
+                {{range .Process}}
+                    <input type="hidden" value="{{.}}" name="pidName">
+                    <div>
+                        <b><label> Service Name</label></b>
+                        <div>{{.}}</div>
+                    </div>
+                    <div>
+                        <label> Service Description</label>
+                        <textarea name="description" rows="1" cols="2"></textarea>
+                    </div>
+                    <br>
+                {{end}}
+                <div>
+                    <input type='submit' value='Add'>
+                </div>
+            </form>
+{{end}}

@@ -29,7 +29,14 @@ func (dash *dashboard) routes() http.Handler {
 		private.GET("/changePassword", dash.showChangePassword)
 		private.POST("/changePassword", dash.changePassword)
 
-		private.GET("/processes", dash.processes)
+		private.GET("/showProcesses", dash.showProcesses)
+		private.GET("/deleteProcess", dash.deleteProcess)
+		private.POST("/editProcess", dash.editProcess)
+
+		private.POST("/processAdd", dash.processAdd)
+		private.GET("/processDetail", dash.showProcessDetails)
+		private.GET("/showNewProcess", dash.showNewProcess)
+
 		private.GET("/logout", dash.logout)
 	}
 

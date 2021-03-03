@@ -1,0 +1,17 @@
+{{define "title"}}Edit Process{{end}}
+
+{{define "main"}}
+    <form action='/dashboard/editProcess' method='POST' novalidate>
+        <input type="hidden" value="{{.Process.Model.ID}}" name="pid">
+            <div>
+                <label>Current description for process n. {{.Process.Model.ID}}:</label>
+                {{if .Error}}
+                    <label class="error">{{.Error}}</label>
+                {{end}}
+                <textarea name="description" rows="4" cols="5">{{.Process.Description}}</textarea>
+            </div>
+            <div>
+                <input type='submit' value='Change'>
+            </div>
+    </form>
+{{end}}

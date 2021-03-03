@@ -18,5 +18,8 @@ func templateRenderer() multitemplate.Renderer {
 	mTemplate.AddFromFiles("login", "ui/template/login.gohtml")
 	mTemplate.AddFromFiles("profile", "ui/template/baselayout.gohtml", "ui/template/profile.gohtml", "ui/template/footer.gohtml")
 	mTemplate.AddFromFiles("notifications", "ui/template/baselayout.gohtml", "ui/template/notifications.gohtml", "ui/template/footer.gohtml")
+	mTemplate.AddFromFiles("process", "ui/template/baselayout.gohtml", "ui/template/processList.gohtml", "ui/template/footer.gohtml")
+	mTemplate.AddFromFiles("processDetail", "ui/template/baselayout.gohtml", "ui/template/processMod.gohtml", "ui/template/footer.gohtml")
+	mTemplate.AddFromFiles("processAdd", "ui/template/baselayout.gohtml", "ui/template/processAdd.gohtml", "ui/template/footer.gohtml")
 	return mTemplate
 }

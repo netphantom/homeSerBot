@@ -1,9 +1,9 @@
 {{define "title"}}Notifications{{end}}
 
 {{define "main"}}
-    <h3>Here below are your notifications</h3>
+    <h4>Notifications</h4>
     {{if .NewUsers}}
-        <h5>New users requests</h5>
+        <h6>New users requests</h6>
         {{range .NewUsers}}
             <table>
                 <tr>
@@ -25,11 +25,19 @@
     {{end}}
 
     {{with .UserProcess}}
-        <h2>Your Process Notifications</h2>
+        <h6>Your Process Notifications</h6>
         <table>
             <tr>
-                <th>Process Name</th>
+                <th>Process ID</th>
+                <td>{{.ProcessID}}</td>
+            </tr>
+            <tr>
+                <th>Process Status</th>
                 <td>{{.status}}</td>
+            </tr>
+            <tr>
+                <th>Process Latest Exit Status</th>
+                <td>{{.ExitStatus}}</td>
             </tr>
         </table>
     {{end}}

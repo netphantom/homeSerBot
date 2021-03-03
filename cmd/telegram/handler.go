@@ -4,6 +4,7 @@ import (
 	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
 	"homeSerBot/pkg/mysqlmodels"
+	"strconv"
 )
 
 func (bot *homeSerBot) start(m *tb.Message) {
@@ -74,7 +75,13 @@ func (bot *homeSerBot) subscribe(m *tb.Message) {
 		return
 	}
 
-	pid := m.Payload
+	p := m.Payload
+	pid, err := strconv.Atoi(p)
+	if err != nil {
+		bot.b.Send(m.Sender, "Please insert a number")
+		return
+	}
+
 	process, err := bot.dbModel.SubscribeToProcess(bot.user, pid)
 	if err != nil {
 		bot.b.Send(m.Sender, err.Error())
@@ -94,8 +101,14 @@ func (bot *homeSerBot) unsubscribe(m *tb.Message) {
 		bot.b.Send(m.Sender, message)
 		return
 	}
-	pid := m.Payload
-	err := bot.dbModel.UnsubscribeToProcess(bot.user, pid)
+	p := m.Payload
+	pid, err := strconv.Atoi(p)
+	if err != nil {
+		bot.b.Send(m.Sender, "Please insert a number")
+		return
+	}
+
+	err = bot.dbModel.UnsubscribeToProcess(bot.user, pid)
 	if err != nil {
 		bot.b.Send(m.Sender, err.Error())
 	} else {

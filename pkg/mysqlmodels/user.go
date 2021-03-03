@@ -24,7 +24,7 @@ func (u *DbModel) RegisterUser(user *User) error {
 	return nil
 }
 
-func (u *DbModel) SubscribeToProcess(user *User, pid string) (*Process, error) {
+func (u *DbModel) SubscribeToProcess(user *User, pid int) (*Process, error) {
 	process, err := u.GetProcessInfo(pid)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (u *DbModel) SubscribeToProcess(user *User, pid string) (*Process, error) {
 	return process, nil
 }
 
-func (u *DbModel) UnsubscribeToProcess(user *User, pid string) error {
+func (u *DbModel) UnsubscribeToProcess(user *User, pid int) error {
 	process, err := u.GetProcessInfo(pid)
 	if err != nil {
 		return err

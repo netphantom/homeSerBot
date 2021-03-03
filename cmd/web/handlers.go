@@ -8,6 +8,9 @@ import (
 	"homeSerBot/pkg/forms"
 	"homeSerBot/pkg/mysqlmodels"
 	"net/http"
+	"os/exec"
+	"strconv"
+	"strings"
 )
 
 const sessionKey = "uId"
@@ -32,10 +35,118 @@ func (dash *dashboard) showNotifications(c *gin.Context) {
 	for _, u := range newUsersList {
 		newUsers = append(newUsers, u.User)
 	}
+
 	sess := ginsession.FromContext(c)
 	sess.Set("notifications", 0)
+
+	uid, ok := sess.Get(sessionKey)
+	if !ok {
+		panic(err)
+	}
+	intUid := uid.(int)
+	user := dash.users.VerifyId(uint(intUid))
+	processNotifList, err := dash.users.UserProcessNotification(user)
+	if err != nil {
+		panic(err)
+	}
+
+	var processesNotification []mysqlmodels.Notification
+	for _, p := range processNotifList {
+		processesNotification = append(processesNotification, p)
+	}
 	c.HTML(http.StatusOK, "notifications", gin.H{
-		"NewUsers": newUsers,
+		"NewUsers":    newUsers,
+		"UserProcess": processesNotification,
+	})
+
+}
+func (dash *dashboard) showProcesses(c *gin.Context) {
+	processList, err := dash.users.ProcessList()
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
+
+	if err != nil {
+		c.HTML(http.StatusOK, "process", gin.H{
+			"Notifications": notifications,
+
+			"Error": "Something went wrong during the process list elaboration",
+		})
+		return
+	}
+
+	c.HTML(http.StatusOK, "process", gin.H{
+		"Notifications": notifications,
+
+		"Process": processList,
+	})
+}
+func (dash *dashboard) showProcessDetails(c *gin.Context) {
+	p := c.Query("process")
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
+
+	pid, err := strconv.Atoi(p)
+	if err != nil {
+		c.HTML(http.StatusOK, "process", gin.H{
+			"Notifications": notifications,
+
+			"Error": "Something went wrong",
+		})
+		return
+	}
+
+	process, err := dash.users.GetProcessInfo(pid)
+	if err != nil {
+		c.HTML(http.StatusOK, "process", gin.H{
+			"Notifications": notifications,
+
+			"Error": "Something went wrong",
+		})
+		return
+	}
+	c.HTML(http.StatusOK, "processDetail", gin.H{
+		"Notifications": notifications,
+
+		"Process": process,
+	})
+}
+func (dash *dashboard) showNewProcess(c *gin.Context) {
+	cmdOutput, err := exec.Command("ls", "/etc/systemd/system/").Output()
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
+
+	if err != nil {
+		c.HTML(http.StatusOK, "processAdd", gin.H{
+			"Notifications": notifications,
+
+			"Error": err,
+		})
+		return
+	}
+	fileList := strings.Split(string(cmdOutput), "\n")
+	dbProcessList, err := dash.users.ProcessList()
+	if err != nil {
+		c.HTML(http.StatusOK, "processAdd", gin.H{
+			"Notifications": notifications,
+
+			"Error": err,
+		})
+		return
+	}
+
+	var purgedFileList []string
+	for _, f := range fileList {
+		if strings.HasSuffix(f, ".service") {
+			if !ProcessInList(dbProcessList, f) {
+				purgedFileList = append(purgedFileList, f)
+			}
+		}
+	}
+
+	c.HTML(http.StatusOK, "processAdd", gin.H{
+		"Notifications": notifications,
+
+		"Process": purgedFileList,
 	})
 }
 
@@ -121,7 +232,7 @@ func (dash *dashboard) profile(c *gin.Context) {
 	if !ok {
 		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
 			"Notifications": notifications,
-			"Error":         "An error occurred during the sess elaboration"})
+			"Error":         "An error occurred during the session elaboration"})
 		return
 	}
 	intUid := uid.(int)
@@ -135,10 +246,6 @@ func (dash *dashboard) profile(c *gin.Context) {
 		"username":   user.Username,
 		"created_at": user.CreatedAt,
 	})
-}
-
-func (dash *dashboard) processes(c *gin.Context) {
-
 }
 
 func (dash *dashboard) changePassword(c *gin.Context) {
@@ -172,7 +279,7 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
 			"Notifications": notifications,
 
-			"Error": "An error occurred during the sess elaboration"})
+			"Error": "An error occurred during the session elaboration"})
 		return
 	}
 
@@ -188,7 +295,8 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 		if errors.Is(err, mysqlmodels.ErrInvalidCredentials) {
 			c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
 				"Notifications": notifications,
-				"Error":         "Invalid Credentials"})
+
+				"Error": "Invalid Credentials"})
 			return
 		} else {
 			panic(err)
@@ -203,6 +311,7 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 func (dash *dashboard) adminMode(c *gin.Context) {
 	username := c.Query("username")
 	status := c.Query("status")
+
 	if status == "accept" {
 		err := dash.users.AllowUser(username)
 		if err != nil {
@@ -222,5 +331,118 @@ func (dash *dashboard) adminMode(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "notifications", gin.H{
 		"Success": "Operation performed correctly",
+	})
+}
+
+func (dash *dashboard) deleteProcess(c *gin.Context) {
+	p := c.Query("process")
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
+
+	pid, err := strconv.Atoi(p)
+	if err != nil {
+		c.HTML(http.StatusOK, "process", gin.H{
+			"Notifications": notifications,
+
+			"Error": "Something went wrong",
+		})
+		return
+	}
+	err = dash.users.DeleteProcess(pid)
+	if err != nil {
+		c.HTML(http.StatusOK, "process", gin.H{
+			"Notifications": notifications,
+
+			"Error": "Something went wrong",
+		})
+		return
+	}
+	processList, err := dash.users.ProcessList()
+	if err != nil {
+		c.HTML(http.StatusOK, "process", gin.H{
+			"Notifications": notifications,
+			"Process":       processList,
+
+			"Error": "Something went wrong during the process list elaboration",
+		})
+		return
+	}
+
+	c.HTML(http.StatusOK, "process", gin.H{
+		"Notifications": notifications,
+		"Process":       processList,
+
+		"Success": "Operation performed correctly",
+	})
+
+}
+
+func (dash *dashboard) editProcess(c *gin.Context) {
+	err := c.Request.ParseForm()
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "processDetail", gin.H{
+			"Error":         err,
+			"Notifications": notifications,
+		})
+		return
+	}
+
+	p := c.Request.Form.Get("pid")
+	description := c.Request.Form.Get("description")
+	pid, err := strconv.Atoi(p)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "processDetail", gin.H{
+			"Error":         err,
+			"Notifications": notifications,
+		})
+		return
+	}
+
+	err = dash.users.UpdateDescription(pid, description)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "processDetail", gin.H{
+			"Error":         err,
+			"Notifications": notifications,
+		})
+		return
+	}
+	processList, err := dash.users.ProcessList()
+	c.HTML(http.StatusOK, "process", gin.H{
+		"Success":       "Description updated",
+		"Process":       processList,
+		"Notifications": notifications,
+	})
+}
+
+func (dash *dashboard) processAdd(c *gin.Context) {
+	err := c.Request.ParseForm()
+	sess := ginsession.FromContext(c)
+	notifications, _ := sess.Get("notifications")
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "processAdd", gin.H{
+			"Error": err,
+
+			"Notifications": notifications,
+		})
+		return
+	}
+	description := c.Request.Form["description"]
+	pidName := c.Request.Form["pidName"]
+
+	for i, d := range description {
+		if d == "" {
+			break
+		}
+		dash.users.AddProcess(pidName[i], d)
+	}
+
+	processList, err := dash.users.ProcessList()
+	c.HTML(http.StatusOK, "process", gin.H{
+		"Success": "Processes successfully added",
+		"Process": processList,
+
+		"Notifications": notifications,
 	})
 }
