@@ -30,3 +30,7 @@ func (u *DbModel) RemoveNotification(n *Notification) error {
 	}
 	return nil
 }
+
+func (u *DbModel) AddNotification(n *Notification) {
+	u.Db.Save(&n)
+}

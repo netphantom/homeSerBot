@@ -220,7 +220,26 @@ func (dash *dashboard) home(c *gin.Context) {
 		return
 	}
 	notifications, _ := sess.Get("notifications")
+	uid, ok := sess.Get(sessionKey)
+	if !ok {
+		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
+			"Notifications": notifications,
+			"Error":         "An error occurred during the session elaboration"})
+		return
+	}
+
+	intUid := uid.(int)
+	user := dash.users.VerifyId(uint(intUid))
+	userNotification, err := dash.users.UserProcessNotification(user)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
+			"Notifications": notifications,
+			"Error":         "User not found"})
+		return
+	}
+
 	c.HTML(http.StatusOK, "home", gin.H{
+		"userNot":       userNotification,
 		"Notifications": notifications,
 	})
 }
@@ -433,7 +452,7 @@ func (dash *dashboard) processAdd(c *gin.Context) {
 
 	for i, d := range description {
 		if d == "" {
-			break
+			continue
 		}
 		dash.users.AddProcess(pidName[i], d)
 	}

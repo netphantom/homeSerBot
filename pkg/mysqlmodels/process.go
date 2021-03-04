@@ -1,18 +1,11 @@
 package mysqlmodels
 
-import (
-	"errors"
-)
-
 // Get the list of all the registered processes
 func (u *DbModel) ProcessList() ([]Process, error) {
 	var processList []Process
 	queryResult := u.Db.Find(&processList)
 	if queryResult.Error != nil {
 		return nil, queryResult.Error
-	}
-	if len(processList) == 0 {
-		return nil, errors.New("process: process list is empty")
 	}
 	return processList, nil
 }

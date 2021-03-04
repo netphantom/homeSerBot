@@ -23,10 +23,10 @@ type Process struct {
 
 type Notification struct {
 	gorm.Model
-	UserID     int `gorm:"primaryKey"`
-	ProcessID  int `gorm:"primaryKey"`
-	Status     string
-	ExitStatus string
+	UserID    int `gorm:"primaryKey"`
+	ProcessID int `gorm:"primaryKey"`
+	Active    string
+	Process   string
 }
 
 type User struct {

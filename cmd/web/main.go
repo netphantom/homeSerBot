@@ -44,6 +44,8 @@ func main() {
 		users:    &mysqlmodels.DbModel{Db: db},
 	}
 
+	go CreateNewNotifications(dash)
+
 	srv := &http.Server{
 		Handler:      dash.routes(),
 		Addr:         ip,

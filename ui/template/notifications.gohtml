@@ -24,21 +24,23 @@
         {{end}}
     {{end}}
 
-    {{with .UserProcess}}
+    {{if .UserProcess}}
         <h6>Your Process Notifications</h6>
         <table>
-            <tr>
-                <th>Process ID</th>
-                <td>{{.ProcessID}}</td>
-            </tr>
-            <tr>
-                <th>Process Status</th>
-                <td>{{.status}}</td>
-            </tr>
-            <tr>
-                <th>Process Latest Exit Status</th>
-                <td>{{.ExitStatus}}</td>
-            </tr>
+            {{range .userNot}}
+                <tr>
+                    <th>Last updated</th>
+                    <td>{{.Model.UpdatedAt}}</td>
+                </tr>
+                <tr>
+                    <th>Running status</th>
+                    <td>{{.Active}}</td>
+                </tr>
+                <tr>
+                    <th>Last exit status</th>
+                    <td>{{.Process}}</td>
+                </tr>
+            {{end}}
         </table>
     {{end}}
 {{end}}

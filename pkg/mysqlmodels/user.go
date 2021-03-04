@@ -140,3 +140,12 @@ func (u *DbModel) NotAllowUser(username string) error {
 	u.Db.Delete(&user)
 	return nil
 }
+
+func (u *DbModel) ListAllUsers() ([]User, error) {
+	var UserList []User
+	queryResult := u.Db.Find(&UserList)
+	if queryResult.Error != nil {
+		return nil, queryResult.Error
+	}
+	return UserList, nil
+}
