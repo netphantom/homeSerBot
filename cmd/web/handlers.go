@@ -15,9 +15,12 @@ import (
 
 const sessionKey = "uId"
 
+//showLogin renders the login page to the user
 func (dash *dashboard) showLogin(c *gin.Context) {
 	c.HTML(http.StatusOK, "login", &templateData{Form: forms.New(nil)})
 }
+
+//showChangePassword renders the page that allow the user to change the password
 func (dash *dashboard) showChangePassword(c *gin.Context) {
 	sess := ginsession.FromContext(c)
 	notifications, _ := sess.Get("notifications")
@@ -26,6 +29,8 @@ func (dash *dashboard) showChangePassword(c *gin.Context) {
 		"Notifications": notifications,
 	})
 }
+
+//showNotifications is a function that renders the notification number on the top of the navigation bar
 func (dash *dashboard) showNotifications(c *gin.Context) {
 	newUsersList, err := dash.users.ListNewUsers()
 	if err != nil {
@@ -60,7 +65,9 @@ func (dash *dashboard) showNotifications(c *gin.Context) {
 	})
 
 }
-func (dash *dashboard) showProcesses(c *gin.Context) {
+
+//showProcessesList shows the page with the list of the processes available for the registration
+func (dash *dashboard) showProcessesList(c *gin.Context) {
 	processList, err := dash.users.ProcessList()
 	sess := ginsession.FromContext(c)
 	notifications, _ := sess.Get("notifications")
@@ -80,6 +87,8 @@ func (dash *dashboard) showProcesses(c *gin.Context) {
 		"Process": processList,
 	})
 }
+
+//showProcessDetails shows the details of the selected process
 func (dash *dashboard) showProcessDetails(c *gin.Context) {
 	p := c.Query("process")
 	sess := ginsession.FromContext(c)
@@ -110,6 +119,8 @@ func (dash *dashboard) showProcessDetails(c *gin.Context) {
 		"Process": process,
 	})
 }
+
+//showNewProcess renders the page showing all the process available for the registration by performing an ls command and parsing the output
 func (dash *dashboard) showNewProcess(c *gin.Context) {
 	cmdOutput, err := exec.Command("ls", "/etc/systemd/system/").Output()
 	sess := ginsession.FromContext(c)
@@ -150,6 +161,7 @@ func (dash *dashboard) showNewProcess(c *gin.Context) {
 	})
 }
 
+//login performs the user login into the dashboard
 func (dash *dashboard) login(c *gin.Context) {
 	err := c.Request.ParseForm()
 	if err != nil {
@@ -187,6 +199,7 @@ func (dash *dashboard) login(c *gin.Context) {
 	}
 }
 
+//logout performs the user logout
 func (dash *dashboard) logout(c *gin.Context) {
 	sess := ginsession.FromContext(c)
 	_, ok := sess.Get(sessionKey)
@@ -206,6 +219,7 @@ func (dash *dashboard) logout(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/login")
 }
 
+//home renders the home page, showing some process updates
 func (dash *dashboard) home(c *gin.Context) {
 	sess := ginsession.FromContext(c)
 	init, ok := sess.Get("init")
@@ -244,6 +258,7 @@ func (dash *dashboard) home(c *gin.Context) {
 	})
 }
 
+//profile shows the user profile with his/her details
 func (dash *dashboard) profile(c *gin.Context) {
 	sess := ginsession.FromContext(c)
 	uid, ok := sess.Get(sessionKey)
@@ -267,6 +282,7 @@ func (dash *dashboard) profile(c *gin.Context) {
 	})
 }
 
+//changePassword allows the user to change the password
 func (dash *dashboard) changePassword(c *gin.Context) {
 	err := c.Request.ParseForm()
 	if err != nil {
@@ -327,6 +343,7 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 		"Success": "Password Changed"})
 }
 
+//adminMode allows the user to accept or not new users
 func (dash *dashboard) adminMode(c *gin.Context) {
 	username := c.Query("username")
 	status := c.Query("status")
@@ -353,6 +370,7 @@ func (dash *dashboard) adminMode(c *gin.Context) {
 	})
 }
 
+//deleteProcess remove a process from the "available" list of the user
 func (dash *dashboard) deleteProcess(c *gin.Context) {
 	p := c.Query("process")
 	sess := ginsession.FromContext(c)
@@ -396,6 +414,7 @@ func (dash *dashboard) deleteProcess(c *gin.Context) {
 
 }
 
+//editProcess allows the user to edit the process description
 func (dash *dashboard) editProcess(c *gin.Context) {
 	err := c.Request.ParseForm()
 	sess := ginsession.FromContext(c)
@@ -435,6 +454,7 @@ func (dash *dashboard) editProcess(c *gin.Context) {
 	})
 }
 
+//processAdd adds a process to the "available" list of the user
 func (dash *dashboard) processAdd(c *gin.Context) {
 	err := c.Request.ParseForm()
 	sess := ginsession.FromContext(c)

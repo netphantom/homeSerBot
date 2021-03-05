@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+//IsAuthorized is a function that check if the bot has been authorized to communicate with the backend.
 func IsAuthorized(bot *homeSerBot, u *tb.User) bool {
 	if !bot.authorized {
 		message := "You are not authorized to perform this action"
@@ -23,6 +24,7 @@ func IsAuthorized(bot *homeSerBot, u *tb.User) bool {
 	return true
 }
 
+//EmptyPayload check if the content of a message is empty or not
 func EmptyPayload(m *tb.Message) bool {
 	if m.Payload == "" {
 		return true
@@ -30,6 +32,7 @@ func EmptyPayload(m *tb.Message) bool {
 	return false
 }
 
+//SendUpdates is a function that run on a different process and checks whether there are new updates to send to the user.
 func SendUpdates(bot *homeSerBot) {
 	for {
 		time.Sleep(3 * time.Second)

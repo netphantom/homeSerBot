@@ -62,7 +62,6 @@ func main() {
 	bot.b.Handle("/subscriptions", bot.subscriptions)
 	bot.b.Handle("/subscribe", bot.subscribe)
 	bot.b.Handle("/unsubscribe", bot.unsubscribe)
-	bot.b.Handle(tb.OnText, bot.text)
 
 	go SendUpdates(&bot)
 

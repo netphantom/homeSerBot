@@ -31,9 +31,9 @@ main {
 h1 a {
     font-size: 36px;
     font-weight: bold;
-    background-image: url("/static/img/logo.png");
+    background-image: url("/ui/static/img/logo.png");
     background-repeat: no-repeat;
-    background-position: 0px 0px;
+    background-position: 0 0;
     height: 36px;
     padding-left: 50px;
     position: relative;
@@ -312,4 +312,11 @@ footer {
     height: 60px;
     color: #6A6C6F;
     text-align: center;
+}
+
+.center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

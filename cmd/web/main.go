@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-type contextKey string
-
-const contextKeyIsAuthenticated = contextKey("isAuthenticated")
-
 type dashboard struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger

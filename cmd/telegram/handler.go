@@ -7,11 +7,13 @@ import (
 	"strconv"
 )
 
+//start sends the initial message to the user tht started the bot
 func (bot *homeSerBot) start(m *tb.Message) {
 	message := "Welcome to the HomeServiceAlertBot.\nPlease register yourself using the /register command"
 	bot.b.Send(m.Sender, message)
 }
 
+//register enables the bot to be used. If the user has been allowed by the admin, then it is going to start receiving the notifications.
 func (bot *homeSerBot) register(m *tb.Message) {
 	userId := uint(m.Sender.ID)
 	user := bot.dbModel.VerifyId(userId)
@@ -45,6 +47,7 @@ func (bot *homeSerBot) register(m *tb.Message) {
 	}
 }
 
+//pidList sends the user all the processes available for registration
 func (bot *homeSerBot) pidList(m *tb.Message) {
 	if !IsAuthorized(bot, m.Sender) {
 		return
@@ -64,6 +67,7 @@ func (bot *homeSerBot) pidList(m *tb.Message) {
 	}
 }
 
+//subscribe connect the user to a process, in a way that the user can receive the correct notifications from the process he/she wants to follow
 func (bot *homeSerBot) subscribe(m *tb.Message) {
 	if !IsAuthorized(bot, m.Sender) {
 		return
@@ -91,6 +95,7 @@ func (bot *homeSerBot) subscribe(m *tb.Message) {
 	bot.b.Send(m.Sender, message)
 }
 
+//unsubscribe remove the user from the notification of a given process
 func (bot *homeSerBot) unsubscribe(m *tb.Message) {
 	if !IsAuthorized(bot, m.Sender) {
 		return
@@ -117,6 +122,7 @@ func (bot *homeSerBot) unsubscribe(m *tb.Message) {
 	}
 }
 
+//subscriptions send a message to the user wit list the process subscriptions
 func (bot *homeSerBot) subscriptions(m *tb.Message) {
 	if !IsAuthorized(bot, m.Sender) {
 		return
@@ -132,8 +138,4 @@ func (bot *homeSerBot) subscriptions(m *tb.Message) {
 		processInfo := fmt.Sprintf("Name: %s\nID: %d", p.Name, p.ID)
 		bot.b.Send(m.Sender, processInfo)
 	}
-}
-
-func (bot *homeSerBot) text(m *tb.Message) {
-	bot.b.Send(m.Sender, m.Text)
 }

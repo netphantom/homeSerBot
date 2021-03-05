@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+//NotificationNumber returns the number of notification to show
 func (dash *dashboard) NotificationNumber(c *gin.Context) int {
 	newUsers, err := dash.users.ListNewUsers()
 	/*
@@ -26,6 +27,7 @@ func (dash *dashboard) NotificationNumber(c *gin.Context) int {
 	return len(newUsers) //+ len(processNotification)
 }
 
+//UpdateProcessStatusUser updates the process status of the given user
 func (dash *dashboard) UpdateProcessStatusUser(uid int) {
 	processList, err := dash.users.ProcessList()
 	if err != nil {
@@ -62,6 +64,7 @@ func (dash *dashboard) UpdateProcessStatusUser(uid int) {
 	}
 }
 
+//CreateNewNotifications is a process that every 5 minutes takes all the users registered in the dashboard and updates the status of their process
 func CreateNewNotifications(dash *dashboard) {
 	for {
 		usersList, err := dash.users.ListAllUsers()
@@ -76,6 +79,7 @@ func CreateNewNotifications(dash *dashboard) {
 	}
 }
 
+// ProcessInList checks if a given process name is present in a process list
 func ProcessInList(list []mysqlmodels.Process, value string) bool {
 	for _, p := range list {
 		if p.Name == value {

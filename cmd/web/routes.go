@@ -18,7 +18,7 @@ func (dash *dashboard) routes() http.Handler {
 	r.POST("/login", dash.login)
 
 	private := r.Group("/dashboard")
-	private.Use(dash.AuthRequired, dash.UpdateNotificationNumber)
+	private.Use(dash.AuthRequired, dash.SetNotificationNumber)
 	{
 		private.GET("", dash.home)
 		private.GET("/profile", dash.profile)
@@ -29,7 +29,7 @@ func (dash *dashboard) routes() http.Handler {
 		private.GET("/changePassword", dash.showChangePassword)
 		private.POST("/changePassword", dash.changePassword)
 
-		private.GET("/showProcesses", dash.showProcesses)
+		private.GET("/showProcessesList", dash.showProcessesList)
 		private.GET("/deleteProcess", dash.deleteProcess)
 		private.POST("/editProcess", dash.editProcess)
 

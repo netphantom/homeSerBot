@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+//AuthRequired checks if the user id has been cached in the gin context
 func (dash *dashboard) AuthRequired(c *gin.Context) {
 	session := ginsession.FromContext(c)
 	_, ok := session.Get(sessionKey)
@@ -16,7 +17,8 @@ func (dash *dashboard) AuthRequired(c *gin.Context) {
 	c.Next()
 }
 
-func (dash *dashboard) UpdateNotificationNumber(c *gin.Context) {
+//SetNotificationNumber set the entry of the notification number in the gin context
+func (dash *dashboard) SetNotificationNumber(c *gin.Context) {
 	session := ginsession.FromContext(c)
 	_, ok := session.Get("notifications")
 	if !ok {
