@@ -1,6 +1,6 @@
 {{define "title"}}Edit Process{{end}}
 
-{{define "main"}}
+{{define "cmd"}}
     <form action='/dashboard/editProcess' method='POST' novalidate>
         <input type="hidden" value="{{.Process.Model.ID}}" name="pid">
             <div>
