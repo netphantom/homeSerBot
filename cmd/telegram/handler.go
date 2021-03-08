@@ -15,8 +15,7 @@ func (bot *homeSerBot) start(m *tb.Message) {
 
 //register enables the bot to be used. If the user has been allowed by the admin, then it is going to start receiving the notifications.
 func (bot *homeSerBot) register(m *tb.Message) {
-	userId := uint(m.Sender.ID)
-	user := bot.dbModel.VerifyId(userId)
+	user := bot.dbModel.UserByUsername(m.Sender.Username)
 	if user == nil {
 		newUser := mysqlmodels.User{
 			User:         *m.Sender,

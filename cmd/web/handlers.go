@@ -167,23 +167,25 @@ func (dash *dashboard) login(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	form := forms.New(c.Request.Form)
-	form.Required("userName", "password")
-	if !form.Valid() {
-		form.Errors.Add("generic", "Please fill all of the fields")
-		c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
-		return
-	}
 
+	form := forms.New(c.Request.Form)
 	id, err := dash.users.Authenticate(form.Get("userName"), form.Get("password"))
+	user := dash.users.VerifyId(uint(id))
 	if err != nil {
+		form.Required("userName", "password")
+		if !form.Valid() {
+			form.Errors.Add("generic", "Please fill all of the fields")
+			c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
+			return
+		}
+
 		if errors.Is(err, mysqlmodels.ErrInvalidCredentials) {
 			form.Errors.Add("generic", "Email or Password are not correct")
 			c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
 		}
 	} else {
 		sess := ginsession.FromContext(c)
-		if form.Get("password") == "" {
+		if user.Password == nil {
 			sess.Set("init", true)
 		} else {
 			sess.Set("init", false)
@@ -229,7 +231,7 @@ func (dash *dashboard) home(c *gin.Context) {
 	}
 	if init.(bool) {
 		c.HTML(http.StatusOK, "changePassword", gin.H{
-			"AlertMessage": "This is your first login. Please select your password",
+			"Alert": "This is your first login. Please select your password",
 		})
 		return
 	}
@@ -288,14 +290,20 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+	sess := ginsession.FromContext(c)
+	init, ok := sess.Get("init")
 	form := forms.New(c.Request.Form)
-	form.Required("current", "new", "confirm")
+
+	if !init.(bool) {
+		form.Required("current", "new", "confirm")
+	} else {
+		form.Required("new", "confirm")
+	}
 	form.Minlength("new", 6)
 	form.Minlength("confirm", 6)
 	if form.Get("new") != form.Get("confirm") {
 		form.Errors.Add("Alert", "Passwords do not match")
 	}
-	sess := ginsession.FromContext(c)
 	notifications, _ := sess.Get("notifications")
 	if !form.Valid() {
 		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
@@ -318,10 +326,9 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 		return
 	}
 
-	init, ok := sess.Get("init")
 	if init.(bool) {
-		err = dash.users.ChangePsw(form.Get("new"), form.Get(""), uid.(int))
-		sess.Delete("init")
+		err = dash.users.ChangePsw(form.Get("new"), "", uid.(int))
+		sess.Set("init", false)
 	} else {
 		err = dash.users.ChangePsw(form.Get("new"), form.Get("current"), uid.(int))
 	}

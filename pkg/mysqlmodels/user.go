@@ -6,11 +6,20 @@ import (
 	"gorm.io/gorm"
 )
 
-//VerifyId function check if the user is correctly registered
+//VerifyId function check if the user is correctly registered by using the ID
 func (u *DbModel) VerifyId(id uint) *User {
 	var user User
-	queryResult := u.Db.Find(&user, id)
-	if errors.Is(queryResult.Error, gorm.ErrRecordNotFound) {
+	u.Db.Find(&user, id)
+	if user.Id == 0 {
+		return nil
+	}
+	return &user
+}
+
+func (u *DbModel) UserByUsername(username string) *User {
+	var user User
+	u.Db.First(&user, "username = ?", username)
+	if user.Id == 0 {
 		return nil
 	}
 	return &user
@@ -87,14 +96,17 @@ func (u *DbModel) ChangePsw(new, current string, id int) error {
 	if queryResult.Error != nil {
 		return queryResult.Error
 	}
-	currentHashedPassword = user.Password
 
-	err := bcrypt.CompareHashAndPassword(currentHashedPassword, []byte(current))
-	if err != nil {
-		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return ErrInvalidCredentials
-		} else {
-			return err
+	if user.Password != nil {
+		currentHashedPassword = user.Password
+
+		err := bcrypt.CompareHashAndPassword(currentHashedPassword, []byte(current))
+		if err != nil {
+			if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+				return ErrInvalidCredentials
+			} else {
+				return err
+			}
 		}
 	}
 

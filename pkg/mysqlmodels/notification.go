@@ -14,11 +14,10 @@ func (u *DbModel) UserProcessNotification(user *User) ([]Notification, error) {
 		if queryRes.Error != nil {
 			return nil, queryRes.Error
 		}
-		if (Notification{}) == notification {
-			return nil, ErrNoRecord
+		if (Notification{}) != notification {
+			//Add it to the list that will be returned
+			notificationList = append(notificationList, notification)
 		}
-		//Add it to the list that will be returned
-		notificationList = append(notificationList, notification)
 	}
 	return notificationList, nil
 }
@@ -32,5 +31,5 @@ func (u *DbModel) RemoveNotification(n *Notification) error {
 }
 
 func (u *DbModel) AddNotification(n *Notification) {
-	u.Db.Save(&n)
+	u.Db.Create(&n)
 }

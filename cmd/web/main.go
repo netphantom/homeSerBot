@@ -1,7 +1,6 @@
 package web
 
 import (
-	"flag"
 	"fmt"
 	"homeSerBot/pkg/mysqlmodels"
 	"log"
@@ -16,20 +15,11 @@ type dashboard struct {
 	users    *mysqlmodels.DbModel
 }
 
-func main() {
-	addr := flag.String("addr", "4000", "The network port to use")
-	ip := fmt.Sprintf("127.0.0.1:%s", *addr)
-
-	dbUserName := flag.String("dbUserName", "admin", "The database username")
-	dbPass := flag.String("dbPass", "admin", "The database password")
-	dbIp := flag.String("dbIp", "8.8.8.8", "The database IP")
-	dbPort := flag.Int("dbPort", 3306, "The database port")
-	dbName := flag.String("dbName", "TelegramBot", "The database name")
-	flag.Parse()
+func Web(ip, dbUserName, dbPass, dbIp, dbName string, dbPort int) {
 
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime)
 
-	dsn := fmt.Sprint(*dbUserName, ":", *dbPass, "@tcp(", *dbIp, ":", *dbPort, ")/", *dbName, "?parseTime=true")
+	dsn := fmt.Sprint(dbUserName, ":", dbPass, "@tcp(", dbIp, ":", dbPort, ")/", dbName, "?parseTime=true")
 	db, err := mysqlmodels.ConnectDb(dsn)
 	if err != nil {
 		panic(err)

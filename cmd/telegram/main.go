@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"flag"
 	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
 	"homeSerBot/pkg/mysqlmodels"
@@ -19,16 +18,9 @@ type homeSerBot struct {
 	chat       *tb.Chat
 }
 
-func main() {
-	tApi := flag.String("tApi", "<Telegram Token>", "The Telegram API token")
-	dbUserName := flag.String("dbUserName", "admin", "The database username")
-	dbPass := flag.String("dbPass", "admin", "The database password")
-	dbIp := flag.String("dbIp", "8.8.8.8", "The database IP")
-	dbPort := flag.Int("dbPort", 3306, "The database port")
-	dbName := flag.String("dbName", "TelegramBot", "The database name")
-	flag.Parse()
+func Telegram(dbUserName, dbPass, dbIp, dbName, tApi string, dbPort int) {
 
-	dsn := fmt.Sprint(*dbUserName, ":", *dbPass, "@tcp(", *dbIp, ":", *dbPort, ")/", *dbName, "?parseTime=true")
+	dsn := fmt.Sprint(dbUserName, ":", dbPass, "@tcp(", dbIp, ":", dbPort, ")/", dbName, "?parseTime=true")
 	db, err := mysqlmodels.ConnectDb(dsn)
 	if err != nil {
 		panic(err)
@@ -39,7 +31,7 @@ func main() {
 	poller := &tb.LongPoller{Timeout: 10 * time.Second}
 
 	b, err := tb.NewBot(tb.Settings{
-		Token:  *tApi,
+		Token:  tApi,
 		Poller: poller,
 	})
 

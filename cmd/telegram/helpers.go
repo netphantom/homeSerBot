@@ -46,7 +46,7 @@ func SendUpdates(bot *homeSerBot) {
 			}
 			if len(notificationList) > 0 {
 				for _, n := range notificationList {
-					bot.b.Send(bot.chat, n.Active)
+					bot.b.Send(bot.chat, n.Process)
 					err = bot.dbModel.RemoveNotification(&n)
 					if err != nil {
 						bot.b.Send(bot.chat, err)
