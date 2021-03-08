@@ -1,37 +1,31 @@
-## Welcome to GitHub Pages
+#HomeSerBot
 
-You can use the [editor on GitHub](https://github.com/netphantom/HomeSerBot/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Welcome to the HomeSerBot project page.
+HomeSerBot is a tool that allows you to keep track on Telegram of the status, and the status code of your processes 
+on your machine. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+It has been developed to give multiple users the possibility to register which processes they want to keep track and 
+manage them through the integrated dashboard.
 
-### Markdown
+## Installation and usage
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+To install and run HomeSerBot you need two things:
 
-```markdown
-Syntax highlighted code block
+1) Go installed on your machine
 
-# Header 1
-## Header 2
-### Header 3
+2) Access to a MySQL database
 
-- Bulleted
-- List
+To run HomeSerBot, navigate in the folder `cmd/main` and run:`go build main.go`.
+When the build is completed you can run it with `./main` appending all the needed parameters:
 
-1. Numbered
-2. List
+`-tApi` is your telegram API key
 
-**Bold** and _Italic_ and `Code` text
+`-dbUserName` is the username to access to the DataBase 
 
-[Link](url) and ![Image](src)
-```
+`-dbPass` the user password  
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+`-dbIp` IP address of the database 
 
-### Jekyll Themes
+`-dbPort` the port to access 
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/netphantom/HomeSerBot/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+`-dbName` the name of the DataBase
