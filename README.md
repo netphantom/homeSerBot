@@ -1,4 +1,4 @@
-![](logo.png)
+![](docs/img/logo.png)
 
 
 Welcome to the HomeSerBot project page.
