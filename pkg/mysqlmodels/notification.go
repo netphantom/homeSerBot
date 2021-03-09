@@ -1,5 +1,7 @@
 package mysqlmodels
 
+import "gorm.io/gorm"
+
 func (u *DbModel) UserProcessNotification(user *User) ([]Notification, error) {
 	processList := u.ListSubscribed(user)
 	uid := user.Id
@@ -31,5 +33,17 @@ func (u *DbModel) RemoveNotification(n *Notification) error {
 }
 
 func (u *DbModel) AddNotification(n *Notification) {
+	var lastNotification Notification
+	queryRes := u.Db.Last(&lastNotification, "user_id = ? AND process_id = ?", n.UserID, n.ProcessID)
+	if queryRes.Error != nil {
+		if queryRes.Error == gorm.ErrRecordNotFound {
+			u.Db.Create(&n)
+			return
+		}
+	}
+	if lastNotification.Active == n.Active && lastNotification.Process == n.Process {
+		u.Db.Save(&n)
+		return
+	}
 	u.Db.Create(&n)
 }

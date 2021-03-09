@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/gin-gonic/gin"
 	"homeSerBot/pkg/mysqlmodels"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -35,10 +36,10 @@ func (dash *dashboard) UpdateProcessStatusUser(uid int) {
 	}
 
 	for _, p := range processList {
-		cmdOutput, err := exec.Command("systemctl", "status", p.Name).Output()
-		if err != nil {
-			panic(err)
-		}
+		cmd := exec.Command("systemctl", "status", p.Name)
+		cmd.Stderr = os.Stderr
+		cmdOutput, _ := cmd.Output()
+
 		fields := strings.Split(string(cmdOutput), "\n")
 
 		var activeField string
@@ -71,7 +72,7 @@ func CreateNewNotifications(dash *dashboard) {
 		if err != nil {
 			panic(err)
 		}
-		time.Sleep(5 * time.Minute)
+		time.Sleep(10 * time.Second)
 		for _, u := range usersList {
 			uid := int(u.Id)
 			go dash.UpdateProcessStatusUser(uid)
