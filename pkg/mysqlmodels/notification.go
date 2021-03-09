@@ -42,6 +42,8 @@ func (u *DbModel) AddNotification(n *Notification) {
 		}
 	}
 	if lastNotification.Active == n.Active && lastNotification.Process == n.Process {
+		n.Model = lastNotification.Model
+		n.ID = lastNotification.ID
 		u.Db.Save(&n)
 		return
 	}

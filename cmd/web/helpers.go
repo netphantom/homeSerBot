@@ -72,7 +72,7 @@ func CreateNewNotifications(dash *dashboard) {
 		if err != nil {
 			panic(err)
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(1 * time.Minute)
 		for _, u := range usersList {
 			uid := int(u.Id)
 			go dash.UpdateProcessStatusUser(uid)
