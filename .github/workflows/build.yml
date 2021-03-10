@@ -21,3 +21,10 @@ jobs:
           name: 'HomeSerBot'
           compress: 'true'
           dest: 'builds'
+
+      - name: Copy build-artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+            args: "./builds/*.tar.gz"
