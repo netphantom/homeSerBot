@@ -12,11 +12,12 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
+
       - name: Generate build files
         uses: thatisuday/go-cross-build@v1
         with:
           platforms: 'linux/amd64, linux/arm'
-          package: 'homeSerBot'
+          package: ''
           name: 'HomeSerBot'
           compress: 'true'
           dest: 'builds'
