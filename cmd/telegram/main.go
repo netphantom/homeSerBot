@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
+	"gorm.io/gorm"
 	"homeSerBot/pkg/mysqlmodels"
 	"log"
 	"os"
@@ -18,14 +18,7 @@ type homeSerBot struct {
 	chat       *tb.Chat
 }
 
-func Telegram(dbUserName, dbPass, dbIp, dbName, tApi string, dbPort int) {
-
-	dsn := fmt.Sprint(dbUserName, ":", dbPass, "@tcp(", dbIp, ":", dbPort, ")/", dbName, "?parseTime=true")
-	db, err := mysqlmodels.ConnectDb(dsn)
-	if err != nil {
-		panic(err)
-	}
-
+func Telegram(tApi string, db gorm.DB) {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 
 	poller := &tb.LongPoller{Timeout: 10 * time.Second}
@@ -44,7 +37,7 @@ func Telegram(dbUserName, dbPass, dbIp, dbName, tApi string, dbPort int) {
 		b:          b,
 		authorized: false,
 		infoLog:    infoLog,
-		dbModel:    &mysqlmodels.DbModel{Db: db},
+		dbModel:    &mysqlmodels.DbModel{Db: &db},
 	}
 
 	bot.b.Handle("/start", bot.start)

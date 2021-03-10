@@ -1,7 +1,7 @@
 package web
 
 import (
-	"fmt"
+	"gorm.io/gorm"
 	"homeSerBot/pkg/mysqlmodels"
 	"log"
 	"net/http"
@@ -15,19 +15,11 @@ type dashboard struct {
 	users    *mysqlmodels.DbModel
 }
 
-func Web(ip, dbUserName, dbPass, dbIp, dbName string, dbPort int) {
-
+func Web(ip string, db gorm.DB) {
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime)
-
-	dsn := fmt.Sprint(dbUserName, ":", dbPass, "@tcp(", dbIp, ":", dbPort, ")/", dbName, "?parseTime=true")
-	db, err := mysqlmodels.ConnectDb(dsn)
-	if err != nil {
-		panic(err)
-	}
-
 	dash := &dashboard{
 		errorLog: errorLog,
-		users:    &mysqlmodels.DbModel{Db: db},
+		users:    &mysqlmodels.DbModel{Db: &db},
 	}
 
 	go CreateNewNotifications(dash)

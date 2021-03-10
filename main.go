@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"homeSerBot/cmd/telegram"
 	"homeSerBot/cmd/web"
+	"homeSerBot/pkg/mysqlmodels"
 	"runtime"
 )
 
@@ -21,8 +22,14 @@ func main() {
 	dbName := flag.String("dbName", "TelegramBot", "The database name")
 	flag.Parse()
 
-	go telegram.Telegram(*dbUserName, *dbPass, *dbIp, *dbName, *tApi, *dbPort)
-	go web.Web(ip, *dbUserName, *dbPass, *dbIp, *dbName, *dbPort)
+	dsn := fmt.Sprint(*dbUserName, ":", *dbPass, "@tcp(", *dbIp, ":", *dbPort, ")/", *dbName, "?parseTime=true")
+	db, err := mysqlmodels.ConnectDb(dsn)
+	if err != nil {
+		panic(err)
+	}
+
+	go telegram.Telegram(*tApi, *db)
+	go web.Web(ip, *db)
 
 	runtime.Goexit()
 }
