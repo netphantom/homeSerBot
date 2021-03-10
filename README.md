@@ -1,3 +1,8 @@
+[![CodeQL](https://github.com/netphantom/homeSerBot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/netphantom/homeSerBot/actions/workflows/codeql-analysis.yml)
+[![Generate release-artifacts](https://github.com/netphantom/homeSerBot/actions/workflows/build.yml/badge.svg)](https://github.com/netphantom/homeSerBot/actions/workflows/build.yml)
+[![made-with-Go](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](http://golang.org)
+
+
 ![](docs/img/logo.png)
 
 

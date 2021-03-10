@@ -1,4 +1,4 @@
-name: Generate release-artifacts
+name: Build Release
 
 on:
   push:
