@@ -30,3 +30,19 @@ When the build is completed you can run it with `./main` appending all the neede
 `-dbPort` the port to access 
 
 `-dbName` the name of the DataBase
+
+## Telegram commands
+
+To be able to use the telegram bot you firstly need to register on the system.
+This can be done  by typing the `/register` command on the Telegram bot. 
+To validate the first user, you need to access to the web dashboard and validate your account.
+
+Currently, few commands have been implemented:
+
+`/pidList` provides with the process list registered on the service.
+
+`/subscribe <item>` by appending the process ID from the previous command, you receive notifications when those are available from the system.
+
+`/unsubscribe <item>` you can decide to stop receiving notifications from the given service.
+
+`/subscriptions` you receive the list of all your process subscriptions.
