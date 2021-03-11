@@ -27,6 +27,7 @@ type Notification struct {
 	ProcessID int `gorm:"primaryKey"`
 	Active    string
 	Process   string
+	Sent      bool
 }
 
 type User struct {

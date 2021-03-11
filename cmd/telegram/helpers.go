@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"errors"
+	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
 	"homeSerBot/pkg/mysqlmodels"
 	"time"
@@ -46,11 +47,13 @@ func SendUpdates(bot *homeSerBot) {
 			}
 			if len(notificationList) > 0 {
 				for _, n := range notificationList {
-					bot.b.Send(bot.chat, n.Process)
-					err = bot.dbModel.RemoveNotification(&n)
+					process, err := bot.dbModel.GetProcessInfo(n.ProcessID)
 					if err != nil {
-						bot.b.Send(bot.chat, err)
+						panic(err)
 					}
+					message := fmt.Sprintf("Process: %s - Status: %s - Exit code: %s", process.Name, n.Active, n.Process)
+					bot.b.Send(bot.chat, message)
+					bot.dbModel.MarkAsSent(&n)
 				}
 			}
 		}

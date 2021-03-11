@@ -12,11 +12,11 @@ func (u *DbModel) UserProcessNotification(user *User) ([]Notification, error) {
 
 		//Find the notification in the table
 		var notification Notification
-		queryRes := u.Db.Find(&notification, "user_id = ? AND process_id = ?", uid, pid)
+		queryRes := u.Db.Find(&notification, "user_id = ? AND process_id = ? AND sent = 0", uid, pid)
 		if queryRes.Error != nil {
 			return nil, queryRes.Error
 		}
-		if (Notification{}) != notification {
+		if notification.Active != "" {
 			//Add it to the list that will be returned
 			notificationList = append(notificationList, notification)
 		}
@@ -24,12 +24,13 @@ func (u *DbModel) UserProcessNotification(user *User) ([]Notification, error) {
 	return notificationList, nil
 }
 
-func (u *DbModel) RemoveNotification(n *Notification) error {
-	queryRes := u.Db.Delete(&n)
-	if queryRes.Error != nil {
-		return queryRes.Error
-	}
-	return nil
+func (u *DbModel) MarkAsSent(n *Notification) {
+	n.Sent = true
+	u.Db.Save(&n)
+}
+
+func (u *DbModel) RemoveNotification(n *Notification) {
+	u.Db.Delete(&n)
 }
 
 func (u *DbModel) AddNotification(n *Notification) {
@@ -44,6 +45,7 @@ func (u *DbModel) AddNotification(n *Notification) {
 	if lastNotification.Active == n.Active && lastNotification.Process == n.Process {
 		n.Model = lastNotification.Model
 		n.ID = lastNotification.ID
+		n.Sent = lastNotification.Sent
 		u.Db.Save(&n)
 		return
 	}
