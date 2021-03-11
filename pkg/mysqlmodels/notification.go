@@ -2,26 +2,11 @@ package mysqlmodels
 
 import "gorm.io/gorm"
 
-func (u *DbModel) UserProcessNotification(user *User) ([]Notification, error) {
-	processList := u.ListSubscribed(user)
-	uid := user.Id
-
+func (u *DbModel) UserProcessNotification(user *User) []Notification {
 	var notificationList []Notification
-	for _, p := range processList {
-		pid := p.ID
+	u.Db.Joins("JOIN processes ON notifications.process_id = processes.id AND sent = 0 AND user_id = ?", user.Id).Find(&notificationList)
 
-		//Find the notification in the table
-		var notification Notification
-		queryRes := u.Db.Find(&notification, "user_id = ? AND process_id = ? AND sent = 0", uid, pid)
-		if queryRes.Error != nil {
-			return nil, queryRes.Error
-		}
-		if notification.Active != "" {
-			//Add it to the list that will be returned
-			notificationList = append(notificationList, notification)
-		}
-	}
-	return notificationList, nil
+	return notificationList
 }
 
 func (u *DbModel) MarkAsSent(n *Notification) {

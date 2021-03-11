@@ -50,10 +50,7 @@ func (dash *dashboard) showNotifications(c *gin.Context) {
 	}
 	intUid := uid.(int)
 	user := dash.users.VerifyId(uint(intUid))
-	processNotifList, err := dash.users.UserProcessNotification(user)
-	if err != nil {
-		panic(err)
-	}
+	processNotifList := dash.users.UserProcessNotification(user)
 
 	var processesNotification []mysqlmodels.Notification
 	for _, p := range processNotifList {
@@ -248,13 +245,7 @@ func (dash *dashboard) home(c *gin.Context) {
 
 	intUid := uid.(int)
 	user := dash.users.VerifyId(uint(intUid))
-	userNotification, err := dash.users.UserProcessNotification(user)
-	if err != nil {
-		c.HTML(http.StatusInternalServerError, "changePassword", gin.H{
-			"Notifications": notifications,
-			"Error":         "User not found"})
-		return
-	}
+	userNotification := dash.users.UserProcessNotification(user)
 
 	c.HTML(http.StatusOK, "home", gin.H{
 		"userNot":       userNotification,

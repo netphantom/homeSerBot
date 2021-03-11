@@ -1,10 +1,8 @@
 package telegram
 
 import (
-	"errors"
 	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
-	"homeSerBot/pkg/mysqlmodels"
 	"time"
 )
 
@@ -36,15 +34,10 @@ func EmptyPayload(m *tb.Message) bool {
 //SendUpdates is a function that run on a different process and checks whether there are new updates to send to the user.
 func SendUpdates(bot *homeSerBot) {
 	for {
-		time.Sleep(3 * time.Second)
+		time.Sleep(10 * time.Second)
 		if bot.user != nil {
-			notificationList, err := bot.dbModel.UserProcessNotification(bot.user)
-			if err != nil {
-				if errors.Is(err, mysqlmodels.ErrNoRecord) {
-					continue
-				}
-				panic(err)
-			}
+			notificationList := bot.dbModel.UserProcessNotification(bot.user)
+
 			if len(notificationList) > 0 {
 				for _, n := range notificationList {
 					process, err := bot.dbModel.GetProcessInfo(n.ProcessID)
