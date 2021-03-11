@@ -40,8 +40,6 @@ func (dash *dashboard) routes() http.Handler {
 		private.GET("/logout", dash.logout)
 	}
 
-	r.NoRoute(func(c *gin.Context) {
-		c.HTML(http.StatusNotFound, "ui/html/notfound.html", gin.H{})
-	})
+	r.NoRoute(dash.notFound)
 	return r
 }

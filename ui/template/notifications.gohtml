@@ -22,25 +22,9 @@
             </table>
             <br>
         {{end}}
+    {{else}}
+        <h6>There are no new notifications</h6>
     {{end}}
 
-    {{if .UserProcess}}
-        <h6>Your Process Notifications</h6>
-        <table>
-            {{range .userNot}}
-                <tr>
-                    <th>Last updated</th>
-                    <td>{{.Model.UpdatedAt}}</td>
-                </tr>
-                <tr>
-                    <th>Running status</th>
-                    <td>{{.Active}}</td>
-                </tr>
-                <tr>
-                    <th>Last exit status</th>
-                    <td>{{.Process}}</td>
-                </tr>
-            {{end}}
-        </table>
-    {{end}}
+
 {{end}}

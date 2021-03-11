@@ -172,6 +172,7 @@ func (dash *dashboard) login(c *gin.Context) {
 	id, err := dash.users.Authenticate(form.Get("userName"), form.Get("password"))
 	user := dash.users.VerifyId(uint(id))
 	if err != nil {
+		//The user has been found in the DB
 		form.Required("userName", "password")
 		if !form.Valid() {
 			form.Errors.Add("generic", "Please fill all of the fields")
@@ -184,6 +185,7 @@ func (dash *dashboard) login(c *gin.Context) {
 			c.HTML(http.StatusInternalServerError, "login", &templateData{Form: form})
 		}
 	} else {
+		//The user is new, thus it's needed to register him/her
 		sess := ginsession.FromContext(c)
 		if user.Password == nil {
 			sess.Set("init", true)
@@ -260,7 +262,7 @@ func (dash *dashboard) home(c *gin.Context) {
 	})
 }
 
-//profile shows the user profile with his/her details
+//profile shows the user profile with the details
 func (dash *dashboard) profile(c *gin.Context) {
 	sess := ginsession.FromContext(c)
 	uid, ok := sess.Get(sessionKey)
@@ -328,6 +330,9 @@ func (dash *dashboard) changePassword(c *gin.Context) {
 
 	if init.(bool) {
 		err = dash.users.ChangePsw(form.Get("new"), "", uid.(int))
+		user := dash.users.VerifyId(uint(uid.(int)))
+		_ = dash.users.AllowUser(user.Username)
+		notifications = 0
 		sess.Set("init", false)
 	} else {
 		err = dash.users.ChangePsw(form.Get("new"), form.Get("current"), uid.(int))
@@ -491,4 +496,20 @@ func (dash *dashboard) processAdd(c *gin.Context) {
 
 		"Notifications": notifications,
 	})
+}
+
+//notFound handles the event of a requested page not found
+func (dash *dashboard) notFound(c *gin.Context) {
+	sess := ginsession.FromContext(c)
+	uid, _ := sess.Get(sessionKey)
+	if uid != nil {
+		notifications, _ := sess.Get("notifications")
+		c.HTML(http.StatusNotFound, "home", gin.H{
+			"Notifications": notifications,
+
+			"Error": "The page requested cannot be found ",
+		})
+	} else {
+		c.HTML(http.StatusNotFound, "notFound", nil)
+	}
 }

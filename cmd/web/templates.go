@@ -21,5 +21,6 @@ func templateRenderer() multitemplate.Renderer {
 	mTemplate.AddFromFiles("process", "ui/template/baselayout.gohtml", "ui/template/processList.gohtml", "ui/template/footer.gohtml")
 	mTemplate.AddFromFiles("processDetail", "ui/template/baselayout.gohtml", "ui/template/processMod.gohtml", "ui/template/footer.gohtml")
 	mTemplate.AddFromFiles("processAdd", "ui/template/baselayout.gohtml", "ui/template/processAdd.gohtml", "ui/template/footer.gohtml")
+	mTemplate.AddFromFiles("notFound", "ui/html/notfound.html")
 	return mTemplate
 }
