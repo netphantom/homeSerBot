@@ -7,6 +7,7 @@ import (
 )
 
 func (dash *dashboard) routes() http.Handler {
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 
 	r.Use(gin.Recovery(), gin.Logger(), ginsession.New())

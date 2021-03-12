@@ -11,7 +11,6 @@ import (
 
 type dashboard struct {
 	errorLog *log.Logger
-	infoLog  *log.Logger
 	users    *mysqlmodels.DbModel
 }
 
