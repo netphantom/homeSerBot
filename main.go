@@ -20,10 +20,11 @@ func main() {
 	dbIp := flag.String("dbIp", "8.8.8.8", "The database IP")
 	dbPort := flag.Int("dbPort", 3306, "The database port")
 	dbName := flag.String("dbName", "TelegramBot", "The database name")
+	dbType := flag.String("dbType", "mysql", "The database type can be: mysql, sqlite, postgres, sqlserver")
 	flag.Parse()
 
 	dsn := fmt.Sprint(*dbUserName, ":", *dbPass, "@tcp(", *dbIp, ":", *dbPort, ")/", *dbName, "?parseTime=true")
-	db, err := mysqlmodels.ConnectDb(dsn)
+	db, err := mysqlmodels.ConnectDb(dsn, *dbType)
 	if err != nil {
 		panic(err)
 	}
