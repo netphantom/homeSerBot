@@ -19,7 +19,7 @@ jobs:
           platforms: 'linux/amd64, linux/arm'
           package: ''
           name: 'HomeSerBot'
-          compress: 'false'
+          compress: 'true'
           dest: 'builds'
           addfolder: 'ui'
 
