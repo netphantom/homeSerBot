@@ -44,7 +44,7 @@ func SendUpdates(bot *homeSerBot) {
 					if err != nil {
 						panic(err)
 					}
-					message := fmt.Sprintf("Process: %s - Status: %s - Exit code: %s", process.Name, n.Active, n.Process)
+					message := fmt.Sprintf("Process: %s - Status: %s - Exit code: %s - On: %s", process.Name, n.Active, n.Process, n.UpdatedAt)
 					bot.b.Send(bot.chat, message)
 					bot.dbModel.MarkAsSent(&n)
 				}

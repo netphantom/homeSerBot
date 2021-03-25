@@ -14,15 +14,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate build files
-        uses: thatisuday/go-cross-build@v1
+        uses: netphantom/go-cross-build@v1
         with:
           platforms: 'linux/amd64, linux/arm'
           package: ''
           name: 'HomeSerBot'
-          compress: 'true'
+          compress: 'false'
           dest: 'builds'
+          addfolder: 'ui'
 
-      - name: Copy build-artifacts
+      - name: Upload build-artifacts
         uses: skx/github-action-publish-binaries@master
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

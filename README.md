@@ -10,21 +10,22 @@ Welcome to the HomeSerBot project page.
 HomeSerBot is a tool that allows you to keep track on Telegram of the status, and the status code of your processes 
 on your machine. 
 
-It has been developed to give multiple users the possibility to register which processes they want to keep track and 
-manage them through the integrated dashboard.
+It has been developed to give multiple users the possibility to register from which processes they want to receive
+notifications and manage them through the integrated dashboard.
 
 ## Installation and usage
 
-To install and run HomeSerBot you need two things:
+There are two ways to run HomeSerBot on your machine, however as all the notifications are stored in a database,
+you must have access to any database source and provide HomeSerBot the correct credentials.
 
-1) Go installed on your machine
+Currently, only the following database engines are supported: Mysql/MariaDb, Sqlite, Postgres, Sqlserver.
 
-2) Access to a MySQL database
+To run HomeSerBot you can either compile the code on your machine, or use one of the release packages provided
+on Github.
 
-To run HomeSerBot, navigate in the folder `cmd/main` and run:`go build main.go`.
-When the build is completed you can run it with `./main` appending all the needed parameters:
+The following parameters are required to correctly run HomeSerBot on your machine: 
 
-`-tApi` is your telegram API key
+`-tApi` is telegram API key you have created from the BotFather (https://t.me/botfather)
 
 `-dbUserName` is the username to access to the DataBase 
 
