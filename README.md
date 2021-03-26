@@ -15,14 +15,21 @@ notifications and manage them through the integrated dashboard.
 
 ## Installation and usage
 
-There are two ways to run HomeSerBot on your machine, however as all the notifications are stored in a database,
-you must have access to any database source and provide HomeSerBot the correct credentials.
+There are two ways to run HomeSerBot on your machine: download the pre-built packages or compile them on your machine, 
+however as all the notifications are stored in a database, you must have access to any database source and provide 
+HomeSerBot the correct credentials.
 
 Currently, only the following database engines are supported: Mysql/MariaDb, Sqlite, Postgres, Sqlserver.
 
-To run HomeSerBot you can either compile the code on your machine, or use one of the release packages provided
-on Github.
+### Installation
+If you prefer to use the pre-built packages, then go in the "release" section, then download the package corresponding 
+to you system and extract the content in a folder.
 
+Alternatively, you can clone this repo and compile HomeSerBot on your machine.
+To do so, you need to install GO first, then run the `go build` command in the main folder.
+Finally, you can run HomeSerBot with `./HomeSerBot`.
+
+### Usage
 The following parameters are required to correctly run HomeSerBot on your machine: 
 
 `-tApi` is telegram API key you have created from the BotFather (https://t.me/botfather)
@@ -36,6 +43,9 @@ The following parameters are required to correctly run HomeSerBot on your machin
 `-dbPort` the port to access 
 
 `-dbName` the name of the DataBase
+
+You can access to the web dashboard by typing the address of the machine you have deployed (typically `localhost`) HomeSerBot, with the 
+`4000` port
 
 ## Telegram commands
 
