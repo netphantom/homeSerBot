@@ -220,7 +220,7 @@ func (dash *dashboard) logout(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/login")
 }
 
-//home renders the home page, showing some process updates
+//home renders the home page, showing some process upd ates
 func (dash *dashboard) home(c *gin.Context) {
 	sess := ginsession.FromContext(c)
 	init, ok := sess.Get("init")

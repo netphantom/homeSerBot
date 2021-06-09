@@ -1,0 +1,12 @@
+FROM golang:1.15
+
+# author of file
+LABEL maintainer="netphantom"
+
+WORKDIR /go/src/homeSerBot
+COPY . .
+
+RUN go build homeSerBot
+EXPOSE 4000
+
+ENTRYPOINT ["./homeSerBot"]

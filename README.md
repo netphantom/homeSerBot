@@ -29,6 +29,14 @@ Alternatively, you can clone this repo and compile HomeSerBot on your machine.
 To do so, you need to install GO first, then run the `go build` command in the main folder.
 Finally, you can run HomeSerBot with `./HomeSerBot`.
 
+### Docker 
+To run HomeSerBot using Docker, just use the following line, filling correctly all the required parameters.
+Notice that the web dashboard of the container uses the port `4000`. 
+
+```
+docker run homeserbot ...
+```
+
 ### Usage
 The following parameters are required to correctly run HomeSerBot on your machine: 
 
@@ -40,7 +48,7 @@ The following parameters are required to correctly run HomeSerBot on your machin
 
 `-dbIp` IP address of the database 
 
-`-dbPort` the port to access 
+`-dbPort` the database port 
 
 `-dbName` the name of the DataBase
 
