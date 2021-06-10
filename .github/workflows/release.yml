@@ -16,6 +16,7 @@ jobs:
       - name: Publish on Github
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
+          file: docker/dockerfile
           registry: docker.pkg.github.com
           name: HomeSerBot
           dockerfile: docker/dockerfile
