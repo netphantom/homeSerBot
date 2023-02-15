@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/gin-contrib/multitemplate v0.0.0-20200916052041-666a7309d230
-	github.com/gin-gonic/gin v1.7.0
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-session/gin-session v3.1.0+incompatible
 	github.com/go-session/session v3.1.2+incompatible // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
