@@ -8,7 +8,7 @@ require (
 	github.com/go-session/gin-session v3.1.0+incompatible
 	github.com/go-session/session v3.1.2+incompatible // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+	golang.org/x/crypto v0.1.0
 	gopkg.in/tucnak/telebot.v2 v2.3.5
 	gorm.io/driver/mysql v1.0.4
 	gorm.io/driver/postgres v1.0.8
