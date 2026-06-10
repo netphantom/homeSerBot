@@ -42,7 +42,6 @@ type User struct {
 
 // Customization of the JoinTable for user_process
 type UserProcess struct {
-	gorm.Model
 	UserID    int `gorm:"primaryKey"`
 	ProcessID int `gorm:"primaryKey"`
 }
